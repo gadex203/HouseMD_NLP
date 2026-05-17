@@ -172,14 +172,16 @@ def main():
             st.success(f"**Teşhis:** {pred.upper()}", icon="✅")
 
             st.subheader("En Yakın 5 Sınıf")
-            max_score = top5[0][1] if top5 else 1.0
+            scores = [s for _, s in top5]
+            lo, hi = min(scores), max(scores)
+            score_range = hi - lo if hi != lo else 1.0
             for i, (sinif, skor) in enumerate(top5):
                 cl, cr = st.columns([3, 7])
                 with cl:
                     st.write(f"{'**' if i == 0 else ''}{i+1}. {sinif}{'**' if i == 0 else ''}")
                 with cr:
-                    norm = max(0.0, skor / max_score) if max_score != 0 else 0.0
-                    st.progress(min(norm, 1.0), text=f"{skor:.3f}")
+                    norm = (skor - lo) / score_range  # 0.0–1.0, her zaman geçerli
+                    st.progress(norm, text=f"{skor:.3f}")
 
 
 if __name__ == '__main__':
